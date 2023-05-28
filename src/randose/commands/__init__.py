@@ -1,0 +1,1 @@
+# Init file. Path: src\randose\commands\__init__.py

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "randose"
+authors = [{name = "Daniel Rosenwald", email = "danielrosenwald@gmail.com"},]
+description = "A CLI tool for automating simple tasks."
+readme = "README.md"
+requires-python = ">=3.10.0"
+version = "0.1.0"
+dependencies = [
+    "typer[all]",
+]
+
+[project.scripts]
+randose = "randose.__main__:app"

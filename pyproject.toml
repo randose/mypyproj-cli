@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "randose"
-version = "0.1.0"
+version = "0.1.1"
 description = "A CLI tool for automating simple tasks."
 authors = [{name = "Daniel Rosenwald", email = "danielrosenwald@gmail.com"},]
 readme = "README.md"

@@ -1,5 +1,5 @@
 import os
-from src.randose import __main__
+from randose import __main__
 
-os.subprocess.run([__main__])
+os.subprocess.run([__main__, ])
 

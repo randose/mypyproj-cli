@@ -1,4 +1,3 @@
-from randose import __app_name__
-from randose.main import app
+from randose import app, __app_name__
 
 app(prog_name=__app_name__)

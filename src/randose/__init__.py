@@ -1,5 +1,9 @@
 # Init file. Path: src\randose\__init__.py
 
-__name__ = "randose"
-__app_name__ = "randose"
-__version__ = "0.1.0"
+from importlib.metadata import version
+
+__app_name__ = __name__
+__version__ = version(__name__)
+
+from .main import app
+__all__ = [app]

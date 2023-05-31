@@ -2,10 +2,10 @@ from typing import Optional
 import typer
 
 from randose import __app_name__, __version__
-from .commands import new
+from .commands import new_app
 
 app = typer.Typer()
-app.add_typer(new.app, name="new")
+app.add_typer(new_app, name="new")
 
 def _version_callback(value: bool):
     if value:

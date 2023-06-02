@@ -13,7 +13,7 @@ pipenv install
 Then, you can use the pyproject.toml file to build the CLI using the build command from the build package:
 
 ```bash
-python -m build
+pipenv run python -m build
 ```
 
 or, if you're on Windows, you can use the build.bat file:
@@ -43,10 +43,10 @@ randose COMMAND [ARGS] [OPTIONS] ...
 The available commands available are:
 - new: Create a new project
   - pyproject: Create a new Python project
-    - ARG name: Name of the project [required]
-    - ARG path: Path to create the project [default: .]
-    - OPTION --pipenv: Create a Pipenv virtual environment [default: True]
-    - OPTION --build: Install 'build' package and create pyproject.toml file [default: True]
+    - ARG project_name: Name of the Python project. [required]
+    - ARG directory: Directory to create the Python project. [default: .]
+    - OPTION --env: Select the build tool and environment manager. [default: pipenv]
+    - OPTION --test: Install the 'pytest' package, and set up a tests directory for easy testing. [default: True]
   - vst-plugin: Create a new vst audio plugin project using the JUCE framework in C++ [not implemented]
     - ARG name: Name of the project [required]
     - ARG path: Path to create the project [default: .]

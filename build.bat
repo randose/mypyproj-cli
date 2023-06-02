@@ -1,1 +1,1 @@
-python -m build
+pipenv run python -m build

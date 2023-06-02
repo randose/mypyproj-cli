@@ -7,8 +7,15 @@ import re
 
 import typer
 from rich import print
+from rich.console import Console
+from rich.panel import Panel
 
-## HELPER FUNCTIONS ############################################################################################################
+console = Console() # Used for normal output
+console_err = Console(stderr=True) # Used for error output
+
+app = typer.Typer()
+
+## HELPER FUNCTIONS #############################################################################################################
 
 def vprint(message: str):
     """
@@ -29,7 +36,7 @@ def write_pyproject_toml(input_env: str, input_path: str, input_name: str, input
         input_name (str): The import-safe name of the project.
         input_version (str): The version number of the project.
     """
-    if input_env is "pipenv":
+    if input_env.lower() == "pipenv":
         vprint("Writing the setuptools-specific pyproject.toml file...")
         file_contents = [
             '[build-system]\n',
@@ -54,7 +61,7 @@ def write_pyproject_toml(input_env: str, input_path: str, input_name: str, input
             f'{input_name} = "{input_name}.__main__:app" # This is optional, but it allows you to run your project from the command line\n'
         ])
         
-    elif input_env is "poetry": # Finish this
+    elif input_env.lower() == "poetry": # Finish this
         vprint("Writing the poetry-specific pyproject.toml file...")
         file_contents = [
             '[build-system]\n',
@@ -82,15 +89,10 @@ def write_pyproject_toml(input_env: str, input_path: str, input_name: str, input
         
     with open(os.path.join(input_path, "pyproject.toml"), "w") as f:
         f.writelines(file_contents)
-    vprint("pyproject.toml file written.")
+    vprint("[bold green]pyproject.toml file written.[/bold green]\n")
     
 #################################################################################################################################
 
-## DEFINE THE APP ###############################################################################################################
-app = typer.Typer()
-#################################################################################################################################
-
-### NEW PY COMMAND ##############################################################################################################
 class Env(str, Enum):
     pipenv = "pipenv"
     poetry = "poetry"
@@ -109,6 +111,7 @@ def complete_env(incomplete: str):
             completions.append(completion_item)
     return completions
 
+### NEW PY COMMAND ##############################################################################################################
 @app.command(name="py")
 def new_py(
     project_name: Annotated[str, typer.Argument(help="Name of the Python project.")],
@@ -122,44 +125,48 @@ def new_py(
     """
     global verbose_global
     verbose_global = verbose
-    print("Creating new Python project...")
     
-    vprint(f"Project name: {project_name}")
-    vprint(f"Directory: {directory}")
-    vprint(f"env: {env.value}")
-    vprint(f"Test: {test}")
-    vprint(f"Verbose: {verbose}")
+    startup_text = f"""Creating new Python project...
+    Project name: [bold blue]{project_name}[/bold blue]
+    Directory: [bold yellow]{os.path.abspath(directory)}[/]
+    env: [bold italic purple]{env.value.lower()}[/]
+    Test: [bold italic green]{test}[/]"""
+    
+    print(Panel(startup_text, title="randose CLI tool", expand=False, border_style="bold blue"))
     
     ## INSTALLED DEPENDENCY CHECKS #################################################################
     vprint("Checking if Python is installed...")
     # Check if Python is installed
     if shutil.which("python") is None:
         # If it isn't, print an error message and exit
-        print("[bold red]Python is not installed. Please install Python.[/bold red]")
+        console_err.print("[bold red]Python is not installed. Please install Python.[/bold red]")
         raise typer.Exit()
+    vprint("Python is installed.\n")
     
     # Check if pipenv is installed
-    if env.value is "pipenv":
+    if env.value.lower() == "pipenv":
         vprint("Checking if pipenv is installed...")
         if shutil.which("pipenv") is None:
             # If it isn't, print an error message and exit
-            print("[bold red]pipenv is not installed. Please install pipenv.[/bold red]")
+            console_err.print(Panel("pipenv is not installed. Please install pipenv.", expand=False, style="bold red"))
             raise typer.Exit()
-    elif env.value is "poetry":
+        vprint("pipenv is installed.\n")
+    elif env.value.lower() == "poetry":
         vprint("Checking if poetry is installed...")
         if shutil.which("poetry") is None:
             # If it isn't, print an error message and exit
-            print("[bold red]poetry is not installed. Please install poetry.[/bold red]")
+            console_err.print(Panel("poetry is not installed. Please install poetry.", expand=False, style="bold red"))
             raise typer.Exit()
+        vprint("poetry is installed.\n")
     ################################################################################################
     
     ## PROJECT NAME AND PATH CHECK #################################################################
     vprint("Checking if the project name is valid...")
     # Check if the project name is valid
     if not re.match(r"^[a-zA-Z][a-zA-Z0-9_-]{0,212}[a-z0-9]$", project_name):
-        print(f"[bold red]Project name {project_name} is an invalid Python package name. Please choose a different name.[/bold red]")
+        console_err.print(f"[bold red]Project name {project_name} is an invalid Python package name. Please choose a different name.[/bold red]")
         raise typer.Exit()
-    vprint(f"[bold green]Project name {project_name} is valid.[/bold green]")
+    vprint(f"[bold green]Project name {project_name} is valid.[/bold green]\n")
     
     project_path = os.path.abspath(os.path.join(directory, project_name))
     
@@ -167,46 +174,46 @@ def new_py(
     # Check if the directory exists
     if os.path.exists(project_path):
         # If it does, print an error message and exit
-        print(f"[bold red]Project {project_name} already exists at {os.path.abspath(directory)}. Please choose a different name or directory.[/bold red]")
+        console_err.print(f"[bold red]Project {project_name} already exists at {os.path.abspath(directory)}. Please choose a different name or directory.[/bold red]")
         raise typer.Exit()
-    vprint(f"[bold green]Project path {project_path} is available.[/bold green]")
+    vprint(f"[bold green]Project path {project_path} is available.[/bold green]\n")
     ################################################################################################
 
     ## PROJECT CREATION ############################################################################
     vprint("Creating project directory...")
     os.makedirs(project_path)
-    vprint(f"[bold green]Project directory {project_path} created.[/bold green]")
+    vprint(f"[bold green]Project directory {project_path} created.[/bold green]\n")
 
     # PROJECT STRUCTURE
-    vprint("Creating project structure...")
+    vprint(Panel("Creating project structure...", expand=False, style="bold"))
     vprint("Creating import-safe package name...")
     project_name_safe = project_name.replace("-", "_")
-    vprint(f"Import-safe package name is [bold yellow]{project_name_safe}[/bold yellow].")
+    vprint(f"Import-safe package name is [bold yellow]{project_name_safe}[/bold yellow].\n")
     
     # Create the src directory
     vprint("Creating [bold green]src[/bold green] directory...")
     os.makedirs(os.path.join(project_path, "src", project_name_safe))
-    vprint("[bold green]src directory created.[/bold green]")
+    vprint("[bold green]src directory created.[/bold green]\n")
     
     vprint("Initializing project version number...")
     project_version = "0.1.0"
-    vprint(f"Project version number is {project_version}.")
+    vprint(f"Project version number is {project_version}.\n")
     
     # Create the __init__.py file
-    vprint("Creating __init__.py file...")
+    vprint("Creating [bold yellow]__init__.py[/bold yellow] file...")
     with open(os.path.join(project_path, "src", project_name_safe, "__init__.py"), "w") as f:
         f.writelines([f"# Path: src\\{project_name_safe}\\__init__.py\n\n",
                         "from importlib.metadata import version\n\n",
                         "__app_name__ = __name__\n",
                         "__version__ = version(__name__)\n",
         ])
-    vprint("__init__.py file created.")
+    vprint("[bold green]__init__.py file created.[/bold green]\n")
     
     # Create the tests directory
     if test:
         vprint("Creating tests directory...")
         os.makedirs(os.path.join(project_path, "tests"))
-        vprint("Tests directory created.")
+        vprint("[bold green]Tests directory created.[/bold green]\n")
     
     # WRITE THE PYPROJECT.TOML FILE ################################################################
     write_pyproject_toml(env.value, project_path, project_name_safe, project_version, test)
@@ -215,29 +222,29 @@ def new_py(
     # WRITE THE SCRIPTS ############################################################################
     vprint("Writing build and install scripts...")
     if os.name == "nt":
-        vprint("Detected Windows.")
+        vprint("Detected [bold blue]Windows[/bold blue].\n")
         script_ext = ".bat"
     else:
-        vprint("Detected Linux/MacOS.")
+        vprint("Detected [bold blue]Linux/MacOS[\bold blue].\n")
         script_ext = ".sh"
 
-    if env.value is "pipenv":
+    if env.value.lower() == "pipenv":
         build_script = ["pipenv run python -m build\n"]
         install_script = [f"cd {os.path.join(project_path, 'src', project_name_safe)}\n",
                           "pipenv install --editable .\n",
                           f"cd {os.path.join('..', '..')}"]
-    elif env.value is "poetry":
+    elif env.value.lower() == "poetry":
         build_script = ["poetry build\n"]
         install_script = ["poetry install\n"]
 
     vprint("Writing build script...")
     with open(os.path.join(project_path, f"build{script_ext}"), "w") as f:
         f.writelines(build_script)
-    vprint("Build script written.")
+    vprint(f"[bold green]Build script 'build{script_ext}' written.[/bold green]\n")
     vprint("Writing install script...")
     with open(os.path.join(project_path, f"install{script_ext}"), "w") as f:
         f.writelines(install_script)
-    vprint("Install script written.")
+    vprint(f"[bold green]Install script 'install{script_ext}' written.[/bold green]\n")
         
         
     # Create the README.md base text
@@ -254,12 +261,13 @@ def new_py(
                       "## License\n\n",
                       "## Project Status\n\n",
                       "## Acknowledgements\n\n"]
+    vprint("README.md file generated.\n")
         
     # Write the README.md file
     vprint("Writing README.md file...")
     with open(os.path.join(project_path, "README.md"), "w") as f:
         f.writelines(readme_lines)
-    vprint("README.md file written.")
+    vprint("[bold green]README.md file written.[/bold green]\n")
     
     # Create the .gitignore file
     vprint("Creating .gitignore file...")
@@ -270,74 +278,72 @@ def new_py(
                       "*.egg-info\n",
                       "dist\n",
                       "build\n",])
-    vprint(".gitignore file created.")
+    vprint("[bold green].gitignore file created.[/bold green]\n")
     
-    print("Project structure created.")
+    print(Panel("Project structure created.", expand=False, style="bold green"))
     ################################################################################################
     
     # CREATE THE VIRTUAL ENVIRONMENT ###############################################################
-    if env.value is "pipenv":
-        print("Creating virtual environment with pipenv...")
+    if env.value.lower() == "pipenv":
         # Set the PIPENV_IGNORE_VIRTUALENVS and PIPENV_IN_PROJECT settings
-        vprint("Setting PIPENV_IGNORE_VIRTUALENVS and PIPENV_IN_PROJECT environment variables...")
+        vprint("Setting PIPENV_IGNORE_VIRTUALENVS and PIPENV_IN_PROJECT environment variables...\n")
         os.environ["PIPENV_IGNORE_VIRTUALENVS"] = "1"
         os.environ["PIPENV_IN_PROJECT"] = "1"
         
         pipenv_commands = ["pipenv", "install", "build"]
-            
-        try:
-            vprint("Running pipenv install command...")
-            # Run the pipenv install command
-            result = subprocess.run(pipenv_commands, cwd=project_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        except Exception as e:
-            print(f"Error: {e}")
-            print(result.stderr)
-            raise typer.Exit()
-        else:
-            # Print the output of the pipenv install command
-            print("Successfully created virtual environment with pipenv.")
-            vprint(f"Standard Output: {result.stdout}")
-        
-        # add pytest as a dev dependency
-        if test:
+                
+        with console.status("Creating virtual environment with pipenv...", spinner="pong"):
             try:
-                vprint("Installing pytest as a dev dependency with pipenv...")
-                # Install pytest
-                subprocess.run(["pipenv", "install", "--dev", "pytest"], cwd=project_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)   
+                vprint("Running pipenv install command...")
+                # Run the pipenv install command
+                result = subprocess.run(pipenv_commands, cwd=project_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             except Exception as e:
-                print(f"Error: {e}")
-                print(result.stderr)
+                console_err.print(Panel(result.stderr, title=f"Error: {e}", expand=False))
                 raise typer.Exit()
-            else:
-                # Print the output of the pipenv install command
-                print("Successfully installed dev dependency 'pytest' with pipenv.")
-                vprint("[bold]Pipenv Output:[/bold]")
-                vprint(f"{result.stdout}")
+        # Print the output of the pipenv install command
+        vprint(Panel(result.stdout, title="Pipenv", expand=False))
+        print("Successfully created virtual environment with [bold italic purple]pipenv[/].")
         
+        if test:
+        # add pytest as a dev dependency
+            with console.status("Installing dev dependency with pipenv...", spinner="pong"):
+                try:
+                    vprint("Installing pytest as a dev dependency with pipenv...")
+                    # Install pytest
+                    subprocess.run(["pipenv", "install", "--dev", "pytest"], cwd=project_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)   
+                except Exception as e:
+                    console_err.print(Panel(result.stderr, title=f"Error: {e}", expand=False))
+                    raise typer.Exit()
+                
+            # Print the output of the pipenv install command
+            print("Successfully installed dev dependency [bold yellow]'pytest'[/] with [bold italic purple]pipenv[/].")
+            vprint(Panel(result.stdout, title="Pipenv", expand=False))
+            
         # Reset the PIPENV_IGNORE_VIRTUALENVS and PIPENV_IN_PROJECT settings
         vprint("Resetting PIPENV_IGNORE_VIRTUALENVS and PIPENV_IN_PROJECT environment variables...")
         del os.environ["PIPENV_IGNORE_VIRTUALENVS"]
         del os.environ["PIPENV_IN_PROJECT"]
+        vprint("[bold green]PIPENV_IGNORE_VIRTUALENVS and PIPENV_IN_PROJECT environment variables reset.[/bold green]\n")
         
-    elif env.value is "poetry":
+    elif env.value.lower() == "poetry":
         poetry_commands = ["poetry", "install"]
-            
-        try:
-            vprint("Running poetry install command...")
-            # Run the poetry install command
-            result = subprocess.run(poetry_commands, cwd=project_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        except Exception as e:
-            print(f"Error: {e}")
-            print(result.stderr)
-            raise typer.Exit()
-        else:
-            # Print the output of the pipenv install command
-            print("Successfully created virtual environment with poetry.")
-            vprint("[bold]Poetry Output:[/bold]")
-            vprint(f"{result.stdout}")
+                
+        with console.status("Creating virtual environment with [bold italic purple]poetry[/]...", spinner="pong"):
+            try:
+                vprint("Running poetry install command...")
+                # Run the poetry install command
+                result = subprocess.run(poetry_commands, cwd=project_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            except Exception as e:
+                console_err.print(Panel(result.stderr, title=f"Error: {e}", expand=False))
+                raise typer.Exit()
+            else:
+                # Print the output of the pipenv install command
+                vprint(Panel(result.stdout, title="Poetry", expand=False))
+        print("Successfully created virtual environment with [bold italic purple]poetry[/].")
 
     # Print a success message
-    print(f"[bold green]Python project {project_name} created at {os.path.abspath(project_path)}.[/bold green]")
+    print("\n")
+    print(Panel(f"Python project [bold blue]{project_name}[/] created at [bold yellow]{os.path.abspath(project_path)}[/].", title="Success", expand=False, border_style="bold green"))
 
 #################################################################################################################################
 

@@ -86,12 +86,12 @@ def write_pyproject_toml(input_env: str, input_path: str, input_name: str, input
             f'{input_name} = "{input_name}.__main__:app" # This is optional, but it allows you to run your project from the command line\n'
         ])
         
-        
     with open(os.path.join(input_path, "pyproject.toml"), "w") as f:
         f.writelines(file_contents)
     vprint("[bold green]pyproject.toml file written.[/bold green]\n")
-    
 #################################################################################################################################
+
+# DEFINE THE ENVIRONMENT OPTIONS ################################################################################################
 
 class Env(str, Enum):
     pipenv = "pipenv"
@@ -230,7 +230,7 @@ def new_py(
 
     if env.value.lower() == "pipenv":
         build_script = ["pipenv run python -m build\n"]
-        install_script = [f"cd {os.path.join(project_path, 'src', project_name_safe)}\n",
+        install_script = [f"cd {os.path.join('src', project_name_safe)}\n",
                           "pipenv install --editable .\n",
                           f"cd {os.path.join('..', '..')}"]
     elif env.value.lower() == "poetry":
@@ -241,13 +241,29 @@ def new_py(
     with open(os.path.join(project_path, f"build{script_ext}"), "w") as f:
         f.writelines(build_script)
     vprint(f"[bold green]Build script 'build{script_ext}' written.[/bold green]\n")
+    if os.name != "nt":
+        vprint("Making build script executable...")
+        try:
+            os.chmod(os.path.join(project_path, f"build{script_ext}"), 0o755)
+        except PermissionError:
+            console_err.print(f"[bold red]Unable to make build script executable. Please make it executable manually.[/bold red]")
+        else:
+            vprint(f"[bold green]Build script 'build{script_ext}' made executable.[/bold green]\n")
     vprint("Writing install script...")
     with open(os.path.join(project_path, f"install{script_ext}"), "w") as f:
         f.writelines(install_script)
     vprint(f"[bold green]Install script 'install{script_ext}' written.[/bold green]\n")
+    if os.name != "nt":
+        vprint("Making install script executable...")
+        try:
+            os.chmod(os.path.join(project_path, f"install{script_ext}"), 0o755)
+        except PermissionError:
+            console_err.print(f"[bold red]Unable to make install script executable. Please make it executable manually.[/bold red]")
+        else:
+            vprint(f"[bold green]Install script 'install{script_ext}' made executable.[/bold green]\n")
+    ################################################################################################        
         
-        
-    # Create the README.md base text
+    # WRITE THE README.MD FILE #####################################################################
     vprint("Generating README.md file...")
     readme_lines = [f"# {project_name}\n\n", 
                       "This project is awesome.\n\n",
@@ -268,8 +284,9 @@ def new_py(
     with open(os.path.join(project_path, "README.md"), "w") as f:
         f.writelines(readme_lines)
     vprint("[bold green]README.md file written.[/bold green]\n")
+    ################################################################################################
     
-    # Create the .gitignore file
+    # CREATE THE .GITIGNORE FILE ###################################################################
     vprint("Creating .gitignore file...")
     with open(os.path.join(project_path, ".gitignore"), "w") as f:
         f.writelines([".vscode\n",
@@ -340,8 +357,9 @@ def new_py(
                 # Print the output of the pipenv install command
                 vprint(Panel(result.stdout, title="Poetry", expand=False))
         print("Successfully created virtual environment with [bold italic purple]poetry[/].")
-
-    # Print a success message
+    ################################################################################################
+    
+    # SUCCESS ######################################################################################
     print("\n")
     print(Panel(f"Python project [bold blue]{project_name}[/] created at [bold yellow]{os.path.abspath(project_path)}[/].", title="Success", expand=False, border_style="bold green"))
 

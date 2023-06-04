@@ -10,16 +10,16 @@ To build the CLI, you need to have Python 3.10 installed. Use the Pipfile and Pi
 pipenv install
 ```
 
-Then, you can use the pyproject.toml file to build the CLI using the build command from the build package:
-
-```bash
-pipenv run python -m build
-```
-
-or, if you're on Windows, you can use the build.bat file:
+Then, you can use the handy build script to build the package using the configuration defined in the pyproject.toml file. Simply run:
 
 ```bash
 build
+```
+
+or, if you're on MacOS/Linux, you can use the full build command file:
+
+```bash
+pipenv run python -m build
 ```
 
 This will generate a dist folder with the wheel file inside. You can use this wheel file to install the CLI globally.

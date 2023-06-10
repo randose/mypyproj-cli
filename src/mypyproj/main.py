@@ -1,12 +1,13 @@
 from typing import Optional
 import typer
 
-from randose import __app_name__, __version__
+from mypyproj import __app_name__, __version__
 from .commands import new_app
 
-app = typer.Typer()
-app.add_typer(new_app, name="new")
+app = typer.Typer(no_args_is_help=True)
+app.add_typer(new_app, name="new", help="Create a new Python project.")
 
+# Global options #
 def _version_callback(value: bool):
     if value:
         typer.echo(f"{__app_name__} v{__version__}")
@@ -19,7 +20,9 @@ def main(
         "--version",
         "-v",
         callback=_version_callback,
-        is_eager=True
+        is_eager=True,
+        help="Show version and exit."
     ),
 ) -> None:
     return
+# End Global options #

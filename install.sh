@@ -1,3 +1,3 @@
-cd src\mypyproj
+cd src/mypyproj
 pipenv install --editable .
-cd ..\..\
+cd ../../

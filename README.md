@@ -1,6 +1,6 @@
-# Randose CLI
+# MyPyProj CLI
 
-This is a CLI built by me to help me with my daily tasks. It is built using Python and the Typer library.
+This is a command line tool that helps create and manage Python projects. It is built using Python and the Typer library.
 
 ## Building
 
@@ -10,32 +10,28 @@ To build the CLI, you need to have Python 3.10 installed. Use the Pipfile and Pi
 pipenv install
 ```
 
-Then, you can use the handy build script to build the package using the configuration defined in the pyproject.toml file. Simply run:
+Then, you can use the handy build script (build.bat for Windows & build.sh for MacOS/Linux) to build the package using the configuration defined in the pyproject.toml file. Simply run:
 
 ```bash
 build
-```
-
-or, if you're on MacOS/Linux, you can use the full build command file:
-
-```bash
-pipenv run python -m build
 ```
 
 This will generate a dist folder with the wheel file inside. You can use this wheel file to install the CLI globally.
 
 ## Installation
 
-Because we want it available globally, but we also want to keep it isolated from the rest of the system, we will use [pipx](https://pypa.github.io/pipx/) to install it.
+We want to be able to call the CLI from anywhere on our system. However, it's best not to directly install any packages directly to our main Python library, as it can cause dependency issues with other projects on our system. Pipx solves this problem. It is a package manager like pip, but instead installs packages to isolated environments, while still making them available globally. If you don't have pipx installed, you can get it here: [pipx](https://pypa.github.io/pipx/).
+
+Once you have pipx installed, you can install MyPyProj using the wheel file generated in the previous step:
 
 ```bash
-pipx install WHL_FILE
+pipx install path/to/whl_file
 ```
 
 ## Usage
 
 ```bash
-randose COMMAND [ARGS] [OPTIONS] ...
+mypyproj COMMAND [ARGS] [OPTIONS] ...
 ```
 
 ## Commands
@@ -46,7 +42,11 @@ The available commands available are:
     - ARG project_name: Name of the Python project. [required]
     - ARG directory: Directory to create the Python project. [default: .]
     - OPTION --env: Select the build tool and environment manager. [default: pipenv]
-    - OPTION --test: Install the 'pytest' package, and set up a tests directory for easy testing. [default: True]
-  - vst-plugin: Create a new vst audio plugin project using the JUCE framework in C++ [not implemented]
-    - ARG name: Name of the project [required]
-    - ARG path: Path to create the project [default: .]
+    - OPTION --test: Install the 'pytest' package as a dev dependency, and set up a tests directory for easy testing. [default: True]
+    - verbose --verbose, -v: Enable verbose output. [default: False]
+- add: Add a new dependency to the project TODO: Implement this
+  - ARG dependency: Name of the dependency to add. [required]
+  - ARG directory: Directory of the project to add the dependency to. [default: .]
+  - OPTION --version: Version of the dependency to add. [default: latest]
+  - OPTION --dev: Add the dependency as a dev dependency. [default: False]
+- remove: Remove a dependency from the project

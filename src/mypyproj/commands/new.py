@@ -1,3 +1,9 @@
+# New Python project command. 
+# 
+# There is only one command in this file, but you can add more if you want, i.e. new_clitool, new_webapp, etc.
+# If you do, make sure to remove the invoke_without_command arg in the typer.Typer() app initialization  on line 22, 
+# and change the decorator for the new_pyproj() function to @app.command(name="pyproj").
+
 from typing import Optional, Annotated
 from enum import Enum
 import os
@@ -13,7 +19,7 @@ from rich.panel import Panel
 console = Console() # Used for normal output
 console_err = Console(stderr=True) # Used for error output
 
-app = typer.Typer()
+app = typer.Typer(no_args_is_help=True, add_completion=True, invoke_without_command=True) # Remove invoke_without_command=True if/when adding more subcommands
 
 ## HELPER FUNCTIONS #############################################################################################################
 
@@ -112,13 +118,13 @@ def complete_env(incomplete: str):
     return completions
 
 ### NEW PY COMMAND ##############################################################################################################
-@app.command(name="py")
-def new_py(
+@app.callback() # Revert this to app.command() if/when adding more subcommands
+def new_pyproj(
     project_name: Annotated[str, typer.Argument(help="Name of the Python project.")],
     directory: Annotated[Optional[str], typer.Argument(help="Directory to create the Python project.")] = os.getcwd(),
     env: Annotated[Optional[Env], typer.Option(case_sensitive=False, autocompletion=complete_env, help="Select the build tool and environment manager.")] = Env.pipenv,
-    test: Annotated[Optional[bool], typer.Option(help="Install the 'pytest' package, and set up a tests directory for easy testing.")] = True,
-    verbose: Annotated[Optional[bool], typer.Option("--verbose", "-v", help="Print verbose output.")] = False
+    test: Annotated[Optional[bool], typer.Option(help="Install the 'pytest' package as a dev dependency, and set up a tests directory for easy testing.")] = True,
+    verbose: Annotated[Optional[bool], typer.Option("--verbose", "-v", help="Enable verbose output.")] = False
 ):
     """
     Create a new Python project.
@@ -132,7 +138,7 @@ def new_py(
     env: [bold italic purple]{env.value.lower()}[/]
     Test: [bold italic green]{test}[/]"""
     
-    print(Panel(startup_text, title="randose CLI tool", expand=False, border_style="bold blue"))
+    print(Panel(startup_text, title="MyPyProj CLI Tool", expand=False, border_style="bold blue"))
     
     ## INSTALLED DEPENDENCY CHECKS #################################################################
     vprint("Checking if Python is installed...")
@@ -148,14 +154,14 @@ def new_py(
         vprint("Checking if pipenv is installed...")
         if shutil.which("pipenv") is None:
             # If it isn't, print an error message and exit
-            console_err.print(Panel("pipenv is not installed. Please install pipenv.", expand=False, style="bold red"))
+            console_err.print(Panel("pipenv is not installed. Please install pipenv. https://pipenv.pypa.io/en/latest/", expand=False, style="bold red"))
             raise typer.Exit()
         vprint("pipenv is installed.\n")
     elif env.value.lower() == "poetry":
         vprint("Checking if poetry is installed...")
         if shutil.which("poetry") is None:
             # If it isn't, print an error message and exit
-            console_err.print(Panel("poetry is not installed. Please install poetry.", expand=False, style="bold red"))
+            console_err.print(Panel("poetry is not installed. Please install poetry. https://python-poetry.org/", expand=False, style="bold red"))
             raise typer.Exit()
         vprint("poetry is installed.\n")
     ################################################################################################
@@ -360,44 +366,7 @@ def new_py(
     ################################################################################################
     
     # SUCCESS ######################################################################################
-    print("\n")
+    print("")
     print(Panel(f"Python project [bold blue]{project_name}[/] created at [bold yellow]{os.path.abspath(project_path)}[/].", title="Success", expand=False, border_style="bold green"))
 
 #################################################################################################################################
-
-## NEW JUCE PROJECT COMMAND #####################################################################################################
-audio_plugins_path = r"C:\\Users\\daniel\\dev\\projects\\personal\\audio-plugins"
-
-@app.command(name="vst")
-def new_vst(
-    project_name: Annotated[str, typer.Argument(help="Name of the JUCE project.")],
-    directory: Annotated[Optional[str], typer.Argument(help="Directory to create the JUCE project.")] = audio_plugins_path,
-):
-    """
-    Create a new JUCE VST Plugin project from the template.
-    """
-        
-    # Check if the directory exists
-    project_path = os.path.join(directory, project_name)
-    if os.path.exists(project_path):
-        # If it does, print an error message and exit
-        print(f"Project {project_name} already exists at {directory}. Please choose a different name or directory.")
-        raise typer.Exit()
-
-    # # If it doesn't, create the project directory
-    # os.makedirs(project_path)
-    
-    # Copy the Template project files to the new project directory
-    shutil.copytree(os.path.join(audio_plugins_path, "Template"), project_path, symlinks=True)
-    
-    # # Check if a remnant JUCE symlink directory exists
-    # if os.path.exists(os.path.join(project_path, "JUCE")):
-    #     # If it does, delete it
-    #     os.rmdir(os.path.join(project_path, "JUCE"))
-        
-    # # Create a symbolic link to the JUCE directory (as an administrator)
-    # os.system('Powershell -Command "& { New-Item -ItemType SymbolicLink -Path ' + os.path.join(project_path, "JUCE") + ' -Target ' + os.path.join(audio_plugins_path, "JUCE") + ' -Verb RunAs } "')
-    
-    # Print a success message
-    print(f"VST Plugin project {project_name} created at {os.path.abspath(project_path)}.")
-    #############################################################################################################################

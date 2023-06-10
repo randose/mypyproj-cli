@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 typer = {extras = ["all"], version = "*"}
 build = "*"
-randose = {editable = true, path = "."}
 
 [dev-packages]
 

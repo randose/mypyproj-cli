@@ -1,4 +1,4 @@
-# Init file. Path: src\randose\__init__.py
+# Init file. Path: src\mypyproj\__init__.py
 
 from importlib.metadata import version
 

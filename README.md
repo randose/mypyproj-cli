@@ -44,9 +44,11 @@ The available commands available are:
     - OPTION --env: Select the build tool and environment manager. [default: pipenv]
     - OPTION --test: Install the 'pytest' package as a dev dependency, and set up a tests directory for easy testing. [default: True]
     - verbose --verbose, -v: Enable verbose output. [default: False]
-- add: Add a new dependency to the project TODO: Implement this
+- add: Add a new dependency to the project <b>TODO: Implement this</b>
   - ARG dependency: Name of the dependency to add. [required]
   - ARG directory: Directory of the project to add the dependency to. [default: .]
   - OPTION --version: Version of the dependency to add. [default: latest]
   - OPTION --dev: Add the dependency as a dev dependency. [default: False]
-- remove: Remove a dependency from the project
+- remove: Remove a dependency from the project <b>TODO: Implement this</b>
+  - ARG dependency: Name of the dependency to remove. [required]
+  - ARG directory: Directory of the project to remove the dependency from. [default: .]

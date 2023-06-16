@@ -1,6 +1,6 @@
 # Pax
 
-Pax is a command line tool that helps create and manage Python projects. It is built using Python and the Typer library, and relies on pipenv to manage virtual environments.
+Pax is a command line tool that helps create and manage Python projects. It is built using Python and the Typer library, and relies on ```pipenv``` to manage virtual environments.
 
 ## Building
 

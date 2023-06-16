@@ -138,7 +138,7 @@ def new_pyproj(
     env: [bold italic purple]{env.value.lower()}[/]
     Test: [bold italic green]{test}[/]"""
     
-    print(Panel(startup_text, title="MyPyProj CLI Tool", expand=False, border_style="bold blue"))
+    print(Panel(startup_text, title="pax", expand=False, border_style="bold blue"))
     
     ## INSTALLED DEPENDENCY CHECKS #################################################################
     vprint("Checking if Python is installed...")

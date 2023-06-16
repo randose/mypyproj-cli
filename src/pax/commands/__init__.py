@@ -1,4 +1,4 @@
-# Init file. Path: src\mypyproj\commands\__init__.py
+# Init file. Path: src\pax\commands\__init__.py
 
 from .new import app as new_app
 

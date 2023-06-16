@@ -1,6 +1,6 @@
-# MyPyProj CLI
+# Pax
 
-This is a command line tool that helps create and manage Python projects. It is built using Python and the Typer library.
+Pax is a command line tool that helps create and manage Python projects. It is built using Python and the Typer library, and relies on pipenv to manage virtual environments.
 
 ## Building
 
@@ -22,7 +22,7 @@ This will generate a dist folder with the wheel (.whl) file inside. You can use 
 
 It is recommended to use pipx, rather than pip, to install Python command line tools. When you use pipx, you are not installing dependencies to your system's main Python installation, which could potentially cause issues with other projects. You can learn how to install pipx here: [pipx](https://pypa.github.io/pipx/).
 
-Once you have pipx installed, you can install MyPyProj using the wheel file generated in the previous step:
+Once you have pipx installed, you can install pax using the wheel file generated in the previous step:
 
 ```bash
 pipx install path/to/whl_file
@@ -31,7 +31,7 @@ pipx install path/to/whl_file
 ## Usage
 
 ```bash
-mypyproj COMMAND [ARGS] [OPTIONS] ...
+pax COMMAND [ARGS] [OPTIONS] ...
 ```
 
 ## Commands

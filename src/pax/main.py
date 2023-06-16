@@ -1,7 +1,7 @@
 from typing import Optional
 import typer
 
-from mypyproj import __app_name__, __version__
+from pax import __app_name__, __version__
 from .commands import new_app
 
 app = typer.Typer(no_args_is_help=True)

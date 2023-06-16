@@ -1,3 +1,3 @@
-cd src/mypyproj
+cd src/pax
 pipenv install --editable .
 cd ../../

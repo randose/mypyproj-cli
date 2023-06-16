@@ -333,7 +333,7 @@ def new_pyproj(
                 try:
                     vprint("Installing pytest as a dev dependency with pipenv...")
                     # Install pytest
-                    subprocess.run(["pipenv", "install", "--dev", "pytest"], cwd=project_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)   
+                    result = subprocess.run(["pipenv", "install", "--dev", "pytest"], cwd=project_path, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)   
                 except Exception as e:
                     console_err.print(Panel(result.stderr, title=f"Error: {e}", expand=False))
                     raise typer.Exit()

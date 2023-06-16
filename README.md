@@ -20,9 +20,9 @@ This will generate a dist folder with the wheel (.whl) file inside. You can use 
 
 ## Installation
 
-It is recommended to use pipx, rather than pip, to install Python command line tools. When you use pipx, you are not installing dependencies to your system's main Python installation, which could potentially cause issues with other projects. You can learn how to install pipx here: [pipx](https://pypa.github.io/pipx/).
+It is recommended to use [pipx](https://pypa.github.io/pipx/), rather than pip, to install Python command line tools. Pipx works just like pip, but installs packages to their own isolated environments, while still making them available globally.
 
-Once you have pipx installed, you can install pax using the wheel file generated in the previous step:
+Install pax using the wheel file generated in the previous step:
 
 ```bash
 pipx install path/to/whl_file
@@ -34,7 +34,7 @@ pipx install path/to/whl_file
 pax COMMAND [ARGS] [OPTIONS] ...
 ```
 
-## Commands
+### Commands
 
 The available commands are:
 - new: Create a new project
